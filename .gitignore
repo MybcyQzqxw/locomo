@@ -1,0 +1,94 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.conda/
+
+# PyTorch
+*.pth
+*.pt
+checkpoints/
+
+# Transformers cache
+transformers_cache/
+.cache/
+huggingface/
+
+# Data files (if large)
+# Uncomment if you want to exclude large data files
+# data/*.json
+# data/*.csv
+# data/*.txt
+
+# Model outputs
+outputs/
+results/
+logs/
+wandb/
+
+# Evaluation results
+*_results.json
+*_evaluation.json
+*_scores.json
+
+# Jupyter notebooks
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+*.tmp
+*.log
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# NLTK data
+nltk_data/
+
+# Lock files
+*.lock
+*.pid
