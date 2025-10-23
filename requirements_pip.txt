@@ -5,6 +5,7 @@ diffusers
 accelerate
 peft
 safetensors
+bitsandbytes  # 用于 4-bit/8-bit 模型量化推理
 
 # NLP packages
 spacy

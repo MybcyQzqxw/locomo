@@ -1,6 +1,11 @@
 # Windows PowerShell script for HuggingFace model evaluation
 # Equivalent to scripts/evaluate_hf_llm.sh
 
+# 激活 conda 环境（确保使用正确的 Python 解释器）
+# 注意：需要先运行 conda init powershell
+Write-Host "Activating conda environment: locomo" -ForegroundColor Cyan
+conda activate locomo
+
 # Set environment variables
 $OUT_DIR = "./outputs"
 $EMB_DIR = "./outputs"
