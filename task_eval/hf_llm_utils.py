@@ -340,8 +340,17 @@ def init_hf_model(args):
     else:
         raise ValueError
     
-    hf_token = os.environ['HF_TOKEN']
-    huggingface_hub.login(hf_token)
+    # 获取 HF Token（如果存在）
+    # 对于开放模型（如 Mistral），token 是可选的
+    # 对于受限模型（如 LLaMA、Gemma），需要 token
+    hf_token = os.environ.get('HF_TOKEN', None)
+    
+    # 只有在提供了 token 时才登录
+    if hf_token:
+        huggingface_hub.login(hf_token)
+        print("Logged in to HuggingFace Hub with token")
+    else:
+        print("No HF_TOKEN provided, proceeding without authentication")
 
     if args.use_4bit:
 
