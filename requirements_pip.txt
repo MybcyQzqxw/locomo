@@ -3,85 +3,85 @@
 torch==2.0.1
 torchvision==0.15.2
 torchaudio==2.0.2
-transformers==4.35.0
-diffusers==0.21.4
-accelerate==0.24.1
-peft==0.5.0
-safetensors==0.4.0
+transformers
+diffusers
+accelerate
+peft
+safetensors
 
 # NLP packages
-spacy==3.5.1
-nltk==3.8.1
-sentence-transformers==2.2.2
-sentencepiece==0.1.99
-tokenizers==0.14.1
-tiktoken==0.5.2
+spacy
+nltk
+sentence-transformers
+sentencepiece
+tokenizers
+tiktoken
 
 # LLM APIs
-openai==0.28.0
-anthropic==0.32.0
-google-generativeai==0.7.2
-google-ai-generativelanguage==0.6.6
+openai
+anthropic
+google-generativeai
+google-ai-generativelanguage
 
 # Data processing
-numpy==1.26.0
-pandas==2.1.2
-scikit-learn==1.3.2
-scipy==1.11.3
+numpy
+pandas
+scikit-learn
+scipy
 
 # Computer Vision
-opencv-python==4.8.1.78
-timm==0.6.13
-open-clip-torch==2.23.0
-pillow==10.0.1
+opencv-python
+timm
+open-clip-torch
+pillow
 
 # Metrics & Evaluation
-bert-score==0.3.13
-rouge==1.0.1
-pycocoevalcap==1.2
-pycocotools==2.0.6
-torchmetrics==1.2.0
+bert-score
+rouge
+pycocoevalcap
+pycocotools
+torchmetrics
 
 # Web & API
-fastapi==0.104.1
-uvicorn==0.23.2
-gradio==3.24.1
-aiohttp==3.8.4
-httpx==0.25.0
-requests==2.31.0
-beautifulsoup4==4.12.2
+fastapi
+uvicorn
+gradio
+aiohttp
+httpx
+requests
+beautifulsoup4
 
 # Jupyter & Notebook
-jupyter==1.0.0
-jupyterlab==4.0.7
-ipython==8.17.2
-ipykernel==6.26.0
-notebook==7.0.6
+jupyter
+jupyterlab
+ipython
+ipykernel
+notebook
 
 # Visualization
-matplotlib==3.7.0
-seaborn==0.13.0
+matplotlib
+seaborn
 plotly
-wordcloud==1.9.3
+wordcloud
 
 # Utilities
-tqdm==4.64.1
-pyyaml==6.0
-python-dateutil==2.8.2
-click==8.1.7
-omegaconf==2.3.0
+tqdm
+pyyaml
+python-dateutil
+click
+omegaconf
 
 # Experiment tracking
-wandb==0.15.12
+wandb
 tensorboard
 
 # PyTorch Lightning
-pytorch-lightning==2.1.0
-lightning==2.1.0
+pytorch-lightning
+lightning
 
 # Other utilities
-filelock==3.9.0
-huggingface-hub==0.17.3
-fsspec==2023.10.0
-packaging==23.0
-typing-extensions==4.8.0
+filelock
+huggingface-hub
+fsspec
+packaging
+typing-extensions
