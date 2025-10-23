@@ -1,4 +1,7 @@
-# sets necessary environment variables
+#!/bin/bash
+# Gemini model evaluation script for Ubuntu/Linux
+
+# sets necessary environment variables and activates conda environment
 source scripts/env.sh
 
 # Evaluate Gemini Pro

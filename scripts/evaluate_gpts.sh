@@ -1,4 +1,7 @@
-# sets necessary environment variables
+#!/bin/bash
+# GPT models evaluation script for Ubuntu/Linux
+
+# sets necessary environment variables and activates conda environment
 source scripts/env.sh
 
 # Evaluate gpt-4-turbo

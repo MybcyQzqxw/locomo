@@ -1,3 +1,28 @@
+#!/bin/bash
+# Environment setup script for LoCoMo project
+
+# Conda 环境名称
+# 如果你的环境名不是 locomo，请修改这里
+CONDA_ENV_NAME=locomo
+
+# 激活 conda 环境
+# 注意：首次使用需要先运行 conda init bash
+if [ -n "$CONDA_ENV_NAME" ]; then
+    echo "正在激活 conda 环境: $CONDA_ENV_NAME"
+    # 初始化 conda（如果尚未初始化）
+    eval "$(conda shell.bash hook)"
+    conda activate $CONDA_ENV_NAME
+    
+    if [ $? -eq 0 ]; then
+        echo "成功激活环境: $CONDA_ENV_NAME"
+        echo "Python 路径: $(which python)"
+        echo "Python 版本: $(python --version)"
+    else
+        echo "警告: 无法激活 conda 环境 $CONDA_ENV_NAME"
+        echo "将使用系统默认 Python"
+    fi
+fi
+
 # save generated outputs to this location
 OUT_DIR=./outputs
 

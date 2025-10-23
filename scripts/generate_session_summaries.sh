@@ -1,4 +1,7 @@
-# sets necessary environment variables
+#!/bin/bash
+# Session summary generation script for Ubuntu/Linux
+
+# sets necessary environment variables and activates conda environment
 source scripts/env.sh
 
 # gets observations using gpt-3.5-turbo and extract DRAGON embeddings for RAG database

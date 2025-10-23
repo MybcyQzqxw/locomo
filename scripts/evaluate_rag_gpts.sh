@@ -1,4 +1,7 @@
-# sets necessary environment variables
+#!/bin/bash
+# RAG-based GPT evaluation script for Ubuntu/Linux
+
+# sets necessary environment variables and activates conda environment
 source scripts/env.sh
 
 # Evaluate gpt-3.5-turbo under different RAG conditions

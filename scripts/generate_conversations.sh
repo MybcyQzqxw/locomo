@@ -1,3 +1,7 @@
+#!/bin/bash
+# Conversation generation script for Ubuntu/Linux
+
+# sets necessary environment variables and activates conda environment
 source scripts/env.sh
 
 python3 generative_agents/generate_conversations.py \
