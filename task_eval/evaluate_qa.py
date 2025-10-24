@@ -136,6 +136,12 @@ def main():
     # 遍历数据集中的每个样本
     for data in samples:
 
+        # 【优化】如果该样本已完成处理（有F1分数），则跳过（支持断点续传）
+        if data['sample_id'] in out_samples:
+            if model_key + '_f1' in out_samples[data['sample_id']]['qa'][0]:
+                print(f"⊙ Skipping already processed sample {data['sample_id']}")
+                continue
+
         # 准备输出数据结构
         out_data = {'sample_id': data['sample_id']}
         
@@ -177,8 +183,13 @@ def main():
         # 将处理后的样本添加到输出字典中
         out_samples[data['sample_id']] = answers
 
+        # 【修复】每处理完一个样本就立即保存，避免崩溃后丢失所有结果
+        with open(args.out_file, 'w') as f:
+            json.dump(list(out_samples.values()), f, indent=2)
+        print(f"✓ Saved progress for sample {data['sample_id']} to {args.out_file}")
 
-    # 将所有结果保存到输出文件（JSON格式，带缩进以便阅读）
+
+    # 最终保存（确保所有结果都已写入）
     with open(args.out_file, 'w') as f:
         json.dump(list(out_samples.values()), f, indent=2)
 
