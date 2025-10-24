@@ -115,8 +115,9 @@ def main():
         raise NotImplementedError
 
 
-    # 加载对话数据集
-    samples = json.load(open(args.data_file))
+    # 加载对话数据集（指定 UTF-8 编码，避免 Windows 上的 GBK 编码问题）
+    with open(args.data_file, 'r', encoding='utf-8') as f:
+        samples = json.load(f)
     
     # 构造预测结果的键名
     # 如果不使用RAG：键名格式为 "模型名_prediction"
@@ -128,7 +129,8 @@ def main():
     
     # 如果输出文件已存在，加载已有的预测结果（用于增量更新或断点续传）
     if os.path.exists(args.out_file):
-        out_samples = {d['sample_id']: d for d in json.load(open(args.out_file))}
+        with open(args.out_file, 'r', encoding='utf-8') as f:
+            out_samples = {d['sample_id']: d for d in json.load(f)}
     else:
         out_samples = {}
 
