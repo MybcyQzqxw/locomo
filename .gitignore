@@ -1,5 +1,7 @@
 # Python
+# 忽略所有目录下的 __pycache__ 文件夹
 __pycache__/
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
