@@ -43,6 +43,7 @@ from transformers import (
 )
 import torch
 import huggingface_hub
+from task_eval.rag_utils import prepare_for_rag, get_rag_context  # 复用RAG准备与上下文检索
 
 
 # 各模型的最大上下文窗口长度（单位：tokens）
@@ -407,12 +408,24 @@ def get_hf_answers(in_data, out_data, args, pipeline, model_name):
         4. 解析模型输出并存储预测结果
         5. 跳过已有预测的问题（除非 overwrite=True）
     """
+    # 计算与 evaluate_qa.py 一致的预测键名，确保评估阶段能找到对应字段
+    prediction_key = (
+        f"{args.model}_prediction" if not args.use_rag else f"{args.model}_{args.rag_mode}_top_{args.top_k}_prediction"
+    )
+
     # 加载模型对应的分词器
     # 注意：这里 if-else 的两个分支目前是相同的
     if 'mistral' in model_name:
         encoding = AutoTokenizer.from_pretrained(model_name)
     else:
         encoding = AutoTokenizer.from_pretrained(model_name)
+
+    # 如果启用 RAG，则准备检索库与问题向量（与 GPT 流程保持一致）
+    if args.use_rag:
+        assert args.batch_size == 1, "RAG 模式下当前仅支持 batch_size=1"
+        context_database, query_vectors = prepare_for_rag(args, in_data)
+    else:
+        context_database, query_vectors = None, None
 
     # 按批次遍历所有问题
     for batch_start_idx in range(0, len(in_data['qa']) + args.batch_size, args.batch_size):
@@ -474,16 +487,63 @@ def get_hf_answers(in_data, out_data, args, pipeline, model_name):
         # 单问题处理模式（batch_size = 1）
         if args.batch_size == 1:
 
-            # 根据模型类型选择相应的执行函数
-            if 'mistral' in model_name:
-                answer = run_mistral(pipeline, questions[0], in_data, encoding, args)
-            elif 'llama' in model_name:
-                answer = run_llama(pipeline, questions[0], in_data, encoding, args)
-            elif 'gemma' in model_name:
-                answer = run_gemma(pipeline, questions[0], in_data, encoding, args)
+            # RAG 模式：使用检索到的上下文直接构建 query；非 RAG 模式：调用各模型专用函数
+            if args.use_rag:
+                # 获取检索上下文
+                query_conv, context_ids = get_rag_context(context_database, query_vectors[include_idxs][0], args)
+
+                # 使用当前模型的 chat_template 构造输入
+                question_prompt = QA_PROMPT.format(questions[0])
+                tokenizer = encoding
+
+                if 'mistral' in model_name:
+                    query = tokenizer.apply_chat_template(
+                        [{"role": "user", "content": query_conv + '\n\n' + question_prompt}],
+                        tokenize=False,
+                        add_generation_prompt=True,
+                    )
+                elif 'gemma' in model_name:
+                    query = tokenizer.apply_chat_template(
+                        [{"role": "user", "content": query_conv + '\n\n' + question_prompt}],
+                        tokenize=False,
+                        add_generation_prompt=True,
+                    )
+                elif 'llama' in model_name:
+                    query = tokenizer.apply_chat_template(
+                        [
+                            {"role": "system", "content": "You are a helpful, respectful and honest assistant whose job is to understand the following conversation and answer questions based on the conversation. If you don't know the answer to a question, please don't share false information."},
+                            {"role": "user", "content": query_conv + '\n\n' + question_prompt},
+                        ],
+                        tokenize=False,
+                        add_generation_prompt=True,
+                    )
+                else:
+                    raise NotImplementedError
+
+                sequences = pipeline(
+                    query,
+                    max_new_tokens=args.batch_size * ANS_TOKENS_PER_QUES,
+                    pad_token_id=encoding.pad_token_id,
+                    eos_token_id=encoding.eos_token_id,
+                    do_sample=True,
+                    top_k=10,
+                    temperature=0.4,
+                    top_p=0.9,
+                    return_full_text=False,
+                    num_return_sequences=1,
+                )
+                answer = sequences[0]["generated_text"]
             else:
-                raise NotImplementedError
-            
+                # 根据模型类型选择相应的执行函数
+                if 'mistral' in model_name:
+                    answer = run_mistral(pipeline, questions[0], in_data, encoding, args)
+                elif 'llama' in model_name:
+                    answer = run_llama(pipeline, questions[0], in_data, encoding, args)
+                elif 'gemma' in model_name:
+                    answer = run_gemma(pipeline, questions[0], in_data, encoding, args)
+                else:
+                    raise NotImplementedError
+
             # 打印问题和答案（用于调试）
             print(questions[0], answer)
 
@@ -506,8 +566,11 @@ def get_hf_answers(in_data, out_data, args, pipeline, model_name):
             else:
                 answer = answer.lower().replace('(a)', '').replace('(b)', '').replace('a)', '').replace('b)', '').replace('answer:', '').strip()
             
-            # 将预测答案存储到输出数据中
-            out_data['qa'][batch_start_idx]['%s_prediction' % args.model] = answer
+            # 将预测答案存储到输出数据中（键名需与评估阶段一致）
+            out_data['qa'][batch_start_idx][prediction_key] = answer
+            # 若启用 RAG，同时记录检索到的上下文 ID，便于召回率评估
+            if args.use_rag:
+                out_data['qa'][batch_start_idx][prediction_key + '_context'] = context_ids
 
         # 批量处理模式（batch_size > 1）
         # 目前未实现，会抛出错误

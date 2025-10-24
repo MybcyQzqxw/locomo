@@ -4,6 +4,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import time
 import os, json
+import pickle
+import numpy as np
 import torch
 from tqdm import tqdm
 from global_methods import get_openai_embedding, set_openai_key, run_chatgpt_with_examples
@@ -55,7 +57,8 @@ def init_context_model(retriever):
     elif retriever == 'dragon':
 
         from transformers import AutoTokenizer, AutoModel
-        context_tokenizer = AutoTokenizer.from_pretrained('facebook/dragon-plus-query-encoder')
+        # Dragon 的上下文侧应使用 context-encoder 对应的 tokenizer
+        context_tokenizer = AutoTokenizer.from_pretrained('facebook/dragon-plus-context-encoder')
         context_model = AutoModel.from_pretrained('facebook/dragon-plus-context-encoder').cuda()
         return context_tokenizer, context_model
 
@@ -79,7 +82,8 @@ def init_query_model(retriever):
     elif retriever == 'contriever':
 
         from transformers import AutoTokenizer, AutoModel
-        question_tokenizer = context_tokenizer
+        # 使用与上下文相同的模型，但需要在本作用域内显式初始化 tokenizer
+        question_tokenizer = AutoTokenizer.from_pretrained('facebook/contriever')
         question_model = AutoModel.from_pretrained('facebook/contriever').cuda()
         question_model.eval()
         return question_tokenizer, question_model
@@ -87,9 +91,9 @@ def init_query_model(retriever):
     elif retriever == 'dragon':
 
         from transformers import AutoTokenizer, AutoModel
-        context_tokenizer = AutoTokenizer.from_pretrained('facebook/dragon-plus-query-encoder')
+        # Dragon 使用不同的 query/context 编码器，这里初始化查询侧的 tokenizer/model
+        question_tokenizer = AutoTokenizer.from_pretrained('facebook/dragon-plus-query-encoder')
         question_model = AutoModel.from_pretrained('facebook/dragon-plus-query-encoder').cuda()
-        question_tokenizer = context_tokenizer
         return question_tokenizer, question_model
 
     elif retriever == 'openai':
@@ -122,10 +126,10 @@ def get_embeddings(retriever, inputs, mode='context'):
             elif retriever == 'contriever':
                 # Compute token embeddings
                 ctx_input = tokenizer(inputs[i:(i+batch_size)], padding=True, truncation=True, return_tensors='pt')
-                # print(ctx_input.keys())
-                # input_ids = context_tokenizer(contexts, return_tensors="pt", padding=True)["input_ids"].cuda()
+                # move to device of encoder
+                ctx_input = {k: v.to(device) for k, v in ctx_input.items()}
                 outputs = encoder(**ctx_input)
-                embeddings = mean_pooling(outputs[0], inputs['attention_mask'])
+                embeddings = mean_pooling(outputs[0], ctx_input['attention_mask'])
                 all_embeddings.append(torch.nn.functional.normalize(embeddings, dim=-1))
             elif retriever == 'dragon':
                 ctx_input = tokenizer(inputs[i:(i+batch_size)], padding=True, truncation=True, return_tensors='pt').to(device)
@@ -144,6 +148,7 @@ def get_context_embeddings(retriever, data, context_tokenizer, context_encoder, 
 
     context_embeddings = []
     context_ids = []
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
     for i in tqdm(range(1,20), desc="Getting context encodings"):
         contexts = []
         if 'session_%s' % i in data:
@@ -173,7 +178,8 @@ def get_context_embeddings(retriever, data, context_tokenizer, context_encoder, 
                 elif retriever == 'contriever':
                     # Compute token embeddings
                     inputs = context_tokenizer(contexts, padding=True, truncation=True, return_tensors='pt')
-                    print(inputs.keys())
+                    # move to device of encoder
+                    inputs = {k: v.to(device) for k, v in inputs.items()}
                     # input_ids = context_tokenizer(contexts, return_tensors="pt", padding=True)["input_ids"].cuda()
                     outputs = context_encoder(**inputs)
                     embeddings = mean_pooling(outputs[0], inputs['attention_mask'])
@@ -192,3 +198,91 @@ def get_context_embeddings(retriever, data, context_tokenizer, context_encoder, 
     # print(context_embeddings.shape[0])
 
     return context_ids, context_embeddings
+
+
+def prepare_for_rag(args, data):
+    """
+    准备 RAG 所需的检索库与查询向量（与生成模型无关，可复用于 GPT/HF 等任意模型）。
+
+    返回：
+        database: dict，包含 embeddings、date_time、dia_id、context
+        question_embeddings: np.ndarray，问题文本的向量
+    """
+    dataset_prefix = os.path.splitext(os.path.split(args.data_file)[-1])[0]
+
+    if args.rag_mode == "summary":
+        assert os.path.exists(os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl")), (
+            f"Summaries and embeddings do not exist for {data['sample_id']}"
+        )
+        database = pickle.load(open(os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl"), 'rb'))
+
+    elif args.rag_mode == 'dialog':
+        pkl_path = os.path.join(args.emb_dir, f"{dataset_prefix}_dialog_{data['sample_id']}.pkl")
+        if not os.path.exists(pkl_path):
+            dialogs = []
+            date_times = []
+            context_ids = []
+            session_nums = [int(k.split('_')[-1]) for k in data['conversation'].keys() if 'session' in k and 'date_time' not in k]
+            for i in range(min(session_nums), max(session_nums) + 1):
+                date_time = data['conversation'][f'session_{i}_date_time']
+                for dialog in data['conversation'][f'session_{i}']:
+                    context_ids.append(dialog['dia_id'])
+                    date_times.append(date_time)
+                    if 'blip_caption' in dialog:
+                        dialogs.append(dialog['speaker'] + ' said, "' + dialog['text'] + '"' + ' and shared ' + dialog['blip_caption'])
+                    else:
+                        dialogs.append(dialog['speaker'] + ' said, "' + dialog['text'] + '"')
+
+            print(f"Getting embeddings for {len(dialogs)} dialogs")
+            embeddings = get_embeddings(args.retriever, dialogs, 'context')
+            assert embeddings.shape[0] == len(dialogs), "Lengths of embeddings and dialogs do not match"
+            database = {
+                'embeddings': embeddings,
+                'date_time': date_times,
+                'dia_id': context_ids,
+                'context': dialogs,
+            }
+
+            with open(pkl_path, 'wb') as f:
+                pickle.dump(database, f)
+        else:
+            database = pickle.load(open(pkl_path, 'rb'))
+
+    elif args.rag_mode == 'observation':
+        pkl_path = os.path.join(args.emb_dir, f"{dataset_prefix}_observation_{data['sample_id']}.pkl")
+        assert os.path.exists(pkl_path), f"Observations and embeddings do not exist for {data['sample_id']}"
+        database = pickle.load(open(pkl_path, 'rb'))
+
+    else:
+        raise ValueError
+
+    print(f"Getting embeddings for {len(data['qa'])} questions")
+    question_embeddings = get_embeddings(args.retriever, [q['question'] for q in data['qa']], 'query')
+    return database, question_embeddings
+
+
+def get_rag_context(context_database, query_vector, args):
+    """
+    基于向量相似度检索 Top-K 上下文，并返回可直接拼接到提示中的文本与对应证据 ID。
+    """
+    output = np.dot(query_vector, context_database['embeddings'].T)
+    sorted_outputs = np.argsort(output)[::-1]
+    sorted_context = [context_database['context'][idx] for idx in sorted_outputs[:args.top_k]]
+
+    sorted_context_ids = []
+    for idx in sorted_outputs[:args.top_k]:
+        context_id = context_database['dia_id'][idx]
+        if isinstance(context_id, str) and ',' in context_id:
+            context_id = [s.strip() for s in context_id.split(',')]
+        if isinstance(context_id, list):
+            sorted_context_ids.extend(context_id)
+        else:
+            sorted_context_ids.append(context_id)
+
+    sorted_date_times = [context_database['date_time'][idx] for idx in sorted_outputs[:args.top_k]]
+    if args.rag_mode in ['dialog', 'observation']:
+        query_context = '\n'.join([date_time + ': ' + context for date_time, context in zip(sorted_date_times, sorted_context)])
+    else:
+        query_context = '\n\n'.join([date_time + ': ' + context for date_time, context in zip(sorted_date_times, sorted_context)])
+
+    return query_context, sorted_context_ids

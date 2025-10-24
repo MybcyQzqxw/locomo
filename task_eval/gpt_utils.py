@@ -8,7 +8,7 @@ import os, json
 from tqdm import tqdm
 import time
 from global_methods import run_chatgpt
-from task_eval.rag_utils import get_embeddings
+from task_eval.rag_utils import get_embeddings, prepare_for_rag, get_rag_context
 import tiktoken
 import numpy as np
 
@@ -64,65 +64,7 @@ def process_ouput(text):
         return json.loads(text)
 
 
-def prepare_for_rag(args, data):
-
-    dataset_prefix = os.path.splitext(os.path.split(args.data_file)[-1])[0]
-
-    if args.rag_mode == "summary":
-
-        # check if embeddings exist
-        assert os.path.exists(os.path.join(args.emb_dir, '%s_session_summary_%s.pkl' % (dataset_prefix, data['sample_id']))), "Summaries and embeddings do not exist for %s" % data['sample_id']
-        database = pickle.load(open(os.path.join(args.emb_dir, '%s_session_summary_%s.pkl' % (dataset_prefix, data['sample_id'])), 'rb'))
-
-
-    elif args.rag_mode == 'dialog':
-        # check if embeddings exist
-        if not os.path.exists(os.path.join(args.emb_dir, '%s_dialog_%s.pkl' % (dataset_prefix, data['sample_id']))):
-
-            dialogs = []
-            date_times = []
-            context_ids = []
-            session_nums = [int(k.split('_')[-1]) for k in data['conversation'].keys() if 'session' in k and 'date_time' not in k]
-            for i in range(min(session_nums), max(session_nums) + 1):
-            
-                date_time = data['conversation']['session_%s_date_time' % i]
-                for dialog in data['conversation']['session_%s' % i]:
-                    context_ids.append(dialog['dia_id'])
-                    date_times.append(date_time)
-                    if 'blip_caption' in dialog:
-                        dialogs.append(dialog['speaker'] + ' said, \"' + dialog['text'] + '\"' + ' and shared ' + dialog['blip_caption'])
-                    else:
-                        dialogs.append(dialog['speaker'] + ' said, \"' + dialog['text'] + '\"')
-
-            print("Getting embeddings for %s dialogs" % len(dialogs))
-            embeddings = get_embeddings(args.retriever, dialogs, 'context')
-            assert embeddings.shape[0] == len(dialogs), "Lengths of embeddings and dialogs do not match"
-            database = {'embeddings': embeddings,
-                             'date_time': date_times,
-                             'dia_id': context_ids,
-                             'context': dialogs}
-
-            with open(os.path.join(args.emb_dir, '%s_dialog_%s.pkl' % (dataset_prefix, data['sample_id'])), 'wb') as f:
-                pickle.dump(database, f)
-
-        else:
-            database = pickle.load(open(os.path.join(args.emb_dir, '%s_dialog_%s.pkl' % (dataset_prefix, data['sample_id'])), 'rb'))
-
-
-    elif args.rag_mode == 'observation':
-        
-        # check if embeddings exist
-        assert os.path.exists(os.path.join(args.emb_dir, '%s_observation_%s.pkl' % (dataset_prefix, data['sample_id']))), "Observations and embeddings do not exist for %s" % data['sample_id']
-        database = pickle.load(open(os.path.join(args.emb_dir, '%s_observation_%s.pkl' % (dataset_prefix, data['sample_id'])), 'rb'))
-
-
-    else:
-        raise ValueError
-    
-    print("Getting embeddings for %s questions" % len(data['qa']))
-    question_embeddings = get_embeddings(args.retriever, [q['question'] for q in data['qa']], 'query')
-
-    return database, question_embeddings
+## prepare_for_rag moved to task_eval.rag_utils
 
 
 def get_cat_5_answer(model_prediction, answer_key):
@@ -142,31 +84,7 @@ def get_cat_5_answer(model_prediction, answer_key):
         return model_prediction
 
 
-def get_rag_context(context_database, query_vector, args):
-
-    output = np.dot(query_vector, context_database['embeddings'].T)
-    sorted_outputs = np.argsort(output)[::-1]
-    sorted_context = [context_database['context'][idx] for idx in sorted_outputs[:args.top_k]]
-    
-    sorted_context_ids = []
-    for idx in sorted_outputs[:args.top_k]:
-        context_id = context_database['dia_id'][idx]
-        if type(context_id) == str:
-            if ',' in context_id:
-                context_id = [s.strip() for s in context_id.split(',')]
-        if type(context_id) == list:
-            sorted_context_ids.extend(context_id)
-        else:
-            sorted_context_ids.append(context_id)
-
-    # sorted_context_ids = [context_database['dia_id'][idx] for idx in sorted_outputs[:args.top_k]]
-    sorted_date_times = [context_database['date_time'][idx] for idx in sorted_outputs[:args.top_k]]
-    if args.rag_mode in ['dialog', 'observation']:
-        query_context = '\n'.join([date_time + ': ' + context for date_time, context in zip(sorted_date_times, sorted_context)])
-    else:
-        query_context = '\n\n'.join([date_time + ': ' + context for date_time, context in zip(sorted_date_times, sorted_context)])
-
-    return query_context, sorted_context_ids
+## get_rag_context moved to task_eval.rag_utils
 
 
 def get_input_context(data, num_question_tokens, encoding, args):
