@@ -293,7 +293,8 @@ def get_chatgpt_summaries(ann_file):
         此函数似乎是为了提取对话历史的辅助函数，
         但当前实现不完整（没有返回值）
     """
-    data = json.load(open(ann_file))
+    with open(ann_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
     conv = ''
     for i in range(1,20):
         if 'session_%s' % i in data:

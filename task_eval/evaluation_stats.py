@@ -38,8 +38,10 @@ def analyze_aggr_acc(ann_file, in_file, out_file, model_name, metric_key, encode
     context_len_og = defaultdict(lambda: 0)
     recall_by_category = defaultdict(lambda: 0)
 
-    outputs = {d['sample_id']: d for d in json.load(open(in_file))}
-    data = {d['sample_id']: d for d in json.load(open(ann_file))}
+    with open(in_file, 'r', encoding='utf-8') as f:
+        outputs = {d['sample_id']: d for d in json.load(f)}
+    with open(ann_file, 'r', encoding='utf-8') as f:
+        data = {d['sample_id']: d for d in json.load(f)}
     sample_ids = outputs.keys()
     
     for sample_id in sample_ids:
@@ -116,7 +118,8 @@ def analyze_aggr_acc(ann_file, in_file, out_file, model_name, metric_key, encode
     #     results_by_memory["gpt3.5-16k"][k] = float(memory_counts[k])/memory_counts_og[k]
     
     if os.path.exists(out_file):
-        results_dict = json.load(open(out_file))
+        with open(out_file, 'r', encoding='utf-8') as f:
+            results_dict = json.load(f)
     else:
         results_dict = {}
 
@@ -142,7 +145,7 @@ def analyze_aggr_acc(ann_file, in_file, out_file, model_name, metric_key, encode
         results_dict[model_name]['context_length_counts'] = context_len_og
         results_dict[model_name]['cum_accuracy_by_context_length'] = context_len_counts
 
-    with open(out_file, 'w') as f:
+    with open(out_file, 'w', encoding='utf-8') as f:
         json.dump(results_dict, f, indent=2)
 
 

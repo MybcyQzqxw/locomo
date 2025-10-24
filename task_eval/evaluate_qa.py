@@ -186,13 +186,13 @@ def main():
         out_samples[data['sample_id']] = answers
 
         # 【修复】每处理完一个样本就立即保存，避免崩溃后丢失所有结果
-        with open(args.out_file, 'w') as f:
+        with open(args.out_file, 'w', encoding='utf-8') as f:
             json.dump(list(out_samples.values()), f, indent=2)
         print(f"✓ Saved progress for sample {data['sample_id']} to {args.out_file}")
 
 
     # 最终保存（确保所有结果都已写入）
-    with open(args.out_file, 'w') as f:
+    with open(args.out_file, 'w', encoding='utf-8') as f:
         json.dump(list(out_samples.values()), f, indent=2)
 
     # 分析并保存聚合统计信息

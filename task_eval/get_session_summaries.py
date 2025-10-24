@@ -57,11 +57,13 @@ def main():
     args = parse_args()
 
     # load conversations
-    samples = json.load(open(args.data_file))
+    with open(args.data_file, 'r', encoding='utf-8') as f:
+        samples = json.load(f)
 
     # load the output file if it exists to check for overwriting
     if os.path.exists(args.out_file):
-        out_samples = {d['sample_id']: d for d in json.load(open(args.out_file))}
+        with open(args.out_file, 'r', encoding='utf-8') as f:
+            out_samples = {d['sample_id']: d for d in json.load(f)}
     else:
         out_samples = {}
 
@@ -106,7 +108,7 @@ def main():
 
         out_samples[output['sample_id']] = output.copy()
     
-    with open(args.out_file, 'w') as f:
+    with open(args.out_file, 'w', encoding='utf-8') as f:
         json.dump(list(out_samples.values()), f, indent=2)
 
 
