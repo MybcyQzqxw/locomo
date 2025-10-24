@@ -10,26 +10,10 @@
         "category": 1
       },
       {
-        "question": "What is Caroline's identity?",
-        "answer": "Transgender woman",
-        "evidence": [
-          "D1:5"
-        ],
-        "category": 1
-      },
-      {
         "question": "When did Caroline go to the LGBTQ support group?",
         "answer": "7 May 2023",
         "evidence": [
           "D1:3"
-        ],
-        "category": 2
-      },
-      {
-        "question": "When did Melanie paint a sunrise?",
-        "answer": 2022,
-        "evidence": [
-          "D1:12"
         ],
         "category": 2
       },
@@ -43,27 +27,10 @@
         "category": 3
       },
       {
-        "question": "Would Caroline still want to pursue counseling as a career if she hadn't received support growing up?",
-        "answer": "Likely no",
-        "evidence": [
-          "D4:15",
-          "D3:5"
-        ],
-        "category": 3
-      },
-      {
         "question": "What did the charity race raise awareness for?",
         "answer": "mental health",
         "evidence": [
           "D2:2"
-        ],
-        "category": 4
-      },
-      {
-        "question": "What did Melanie realize after the charity race?",
-        "answer": "self-care is important",
-        "evidence": [
-          "D2:3"
         ],
         "category": 4
       },
@@ -74,14 +41,6 @@
         ],
         "category": 5,
         "adversarial_answer": "self-care is important"
-      },
-      {
-        "question": "What are Melanie's plans for the summer with respect to adoption?",
-        "evidence": [
-          "D2:8"
-        ],
-        "category": 5,
-        "adversarial_answer": "researching adoption agencies"
       }
     ],
     "conversation": {

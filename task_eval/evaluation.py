@@ -196,10 +196,13 @@ def eval_question_answering(qas, eval_key='prediction', metric='f1'):
     answer_lengths = []
     for i, line in enumerate(qas):
         # line = json.loads(line)
+        # 对抗性问题 (category 5) 使用 'adversarial_answer' 字段
+        answer_field = 'adversarial_answer' if line['category'] == 5 else 'answer'
+        
         if type(line[eval_key]) == list:
-            answer = line['answer']
+            answer = line[answer_field]
         else:
-            answer = str(line['answer'])
+            answer = str(line[answer_field])
         if line['category'] == 3:
             answer = answer.split(';')[0].strip()
         
