@@ -444,16 +444,17 @@ def get_hf_answers(in_data, out_data, args, pipeline, model_name):
             
             # Category 5: 对抗性问题 - 将问题转换为选择题格式
             # 随机打乱正确答案和 "No information available" 的顺序
+            # 注意：对抗性问题使用 'adversarial_answer' 字段
             elif qa['category'] == 5:
                 question = qa['question'] + " (a) {} (b) {}. Select the correct answer by writing (a) or (b)."
                 if random.random() < 0.5:
                     # 正确答案在选项 (b)
-                    question = question.format('No information available', qa['answer'])
-                    answer = {'a': 'No information available', 'b': qa['answer']}
+                    question = question.format('No information available', qa['adversarial_answer'])
+                    answer = {'a': 'No information available', 'b': qa['adversarial_answer']}
                 else:
                     # 正确答案在选项 (a)
-                    question = question.format(qa['answer'], 'No information available')
-                    answer = {'b': 'No information available', 'a': qa['answer']}
+                    question = question.format(qa['adversarial_answer'], 'No information available')
+                    answer = {'b': 'No information available', 'a': qa['adversarial_answer']}
                 cat_5_idxs.append(len(questions))
                 questions.append(question)
                 cat_5_answers.append(answer)
