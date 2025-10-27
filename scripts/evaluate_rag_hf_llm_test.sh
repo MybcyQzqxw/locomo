@@ -17,7 +17,7 @@ EMB_DIR=./outputs/rag_hf_llm/embeddings
 MODEL="mistral-instruct-7b-32k-v2"
 
 # dialog as database - TEST with only TOP_K=5
-for TOP_K in 5; do
+for TOP_K in 5 10 25 50; do
     python3 task_eval/evaluate_qa.py \
         --data-file $DATA_FILE_PATH --out-file $OUT_DIR/$QA_OUTPUT_FILE \
         --model $MODEL --batch-size 1 --use-rag --retriever dragon --top-k $TOP_K \
