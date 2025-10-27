@@ -1,8 +1,9 @@
 #!/bin/bash
-# Gemini model evaluation script for Ubuntu/Linux
+# Gemini evaluation script for Ubuntu/Linux
 
 # sets necessary environment variables and activates conda environment
-source scripts/env.sh
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$SCRIPT_DIR/env.sh"
 
 # Evaluate Gemini Pro
 python3 task_eval/evaluate_qa.py \

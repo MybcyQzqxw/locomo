@@ -2,7 +2,8 @@
 # Conversation generation script for Ubuntu/Linux
 
 # sets necessary environment variables and activates conda environment
-source scripts/env.sh
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$SCRIPT_DIR/env.sh"
 
 python3 generative_agents/generate_conversations.py \
     --out-dir ./data/multimodal_dialog/example/ \

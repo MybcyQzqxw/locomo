@@ -2,7 +2,9 @@
 # RAG-based HuggingFace local model evaluation script for Ubuntu/Linux
 
 # sets necessary environment variables and activates conda environment
-source scripts/env.sh
+# Use BASH_SOURCE to get the directory of this script, then source the env file
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$SCRIPT_DIR/env.sh"
 
 # Evaluate local HuggingFace model under different RAG conditions
 # You can change the MODEL variable to test different models

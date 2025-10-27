@@ -2,7 +2,8 @@
 # RAG-based GPT evaluation script for Ubuntu/Linux
 
 # sets necessary environment variables and activates conda environment
-source scripts/env.sh
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+source "$SCRIPT_DIR/env.sh"
 
 # Evaluate gpt-3.5-turbo under different RAG conditions
 
