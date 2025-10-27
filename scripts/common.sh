@@ -27,6 +27,14 @@ cd "$PROJECT_ROOT"
 echo "Working directory: $(pwd)"
 
 # ============================================
+# HuggingFace Configuration
+# ============================================
+# Use HuggingFace mirror for faster downloads in China
+# Comment out the following line if you don't need mirror
+export HF_ENDPOINT=https://hf-mirror.com
+echo "HuggingFace mirror enabled: $HF_ENDPOINT"
+
+# ============================================
 # Conda Environment Setup
 # ============================================
 # Conda environment name
