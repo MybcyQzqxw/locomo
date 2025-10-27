@@ -6,6 +6,10 @@
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source "$SCRIPT_DIR/env1_5qa.sh"
 
+# Override output directories for RAG-based HF LLM results
+OUT_DIR=./outputs/rag_hf_llm
+EMB_DIR=./outputs/rag_hf_llm/embeddings
+
 # Evaluate local HuggingFace model under different RAG conditions
 # You can change the MODEL variable to test different models
 
