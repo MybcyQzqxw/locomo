@@ -27,6 +27,15 @@ cd "$PROJECT_ROOT"
 echo "Working directory: $(pwd)"
 
 # ============================================
+# Load Local Environment Variables
+# ============================================
+# Load .env.local if it exists (contains sensitive tokens)
+if [ -f "$PROJECT_ROOT/.env.local" ]; then
+    echo "Loading local environment variables from .env.local"
+    export $(cat "$PROJECT_ROOT/.env.local" | grep -v '^#' | xargs)
+fi
+
+# ============================================
 # HuggingFace Configuration
 # ============================================
 # Use HuggingFace mirror for faster downloads in China

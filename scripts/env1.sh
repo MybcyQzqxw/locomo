@@ -37,5 +37,6 @@ export GOOGLE_API_KEY=
 # Anthropic API Key
 export ANTHROPIC_API_KEY=
 
-# HuggingFace Token
-export HF_TOKEN=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
+# HuggingFace Token (Set this in your environment or create a local .env file)
+# Do NOT commit your actual token to git!
+export HF_TOKEN=
