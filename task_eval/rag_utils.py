@@ -212,13 +212,7 @@ def prepare_for_rag(args, data):
     """
     dataset_prefix = os.path.splitext(os.path.split(args.data_file)[-1])[0]
 
-    if args.rag_mode == "summary":
-        assert os.path.exists(os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl")), (
-            f"Summaries and embeddings do not exist for {data['sample_id']}"
-        )
-        database = pickle.load(open(os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl"), 'rb'))
-
-    elif args.rag_mode == 'dialog':
+    if args.rag_mode == 'dialog':
         pkl_path = os.path.join(args.emb_dir, f"{dataset_prefix}_dialog_{data['sample_id']}.pkl")
         if not os.path.exists(pkl_path):
             dialogs = []
@@ -251,6 +245,12 @@ def prepare_for_rag(args, data):
                 pickle.dump(database, f)
         else:
             database = pickle.load(open(pkl_path, 'rb'))
+
+    elif args.rag_mode == "summary":
+        assert os.path.exists(os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl")), (
+            f"Summaries and embeddings do not exist for {data['sample_id']}"
+        )
+        database = pickle.load(open(os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl"), 'rb'))
 
     elif args.rag_mode == 'observation':
         pkl_path = os.path.join(args.emb_dir, f"{dataset_prefix}_observation_{data['sample_id']}.pkl")
