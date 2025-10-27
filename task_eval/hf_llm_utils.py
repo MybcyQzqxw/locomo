@@ -653,10 +653,12 @@ def init_hf_model(args):
     # 对于受限模型（如 LLaMA、Gemma），需要通过申请获取访问权限和 token
     hf_token = os.environ.get('HF_TOKEN', None)
     
-    # 只有在提供了 token 时才登录
+    # 输出 token 状态用于调试
     if hf_token:
-        huggingface_hub.login(hf_token)
-        print("Logged in to HuggingFace Hub with token")
+        print(f"HF_TOKEN found: {hf_token[:10]}... (length: {len(hf_token)})")
+        # 不使用 huggingface_hub.login()，直接在加载模型时传递 token
+        # 这样可以避免与缓存的旧 token 冲突
+        print("Will use HF_TOKEN for model loading")
     else:
         print("No HF_TOKEN provided, proceeding without authentication")
 
