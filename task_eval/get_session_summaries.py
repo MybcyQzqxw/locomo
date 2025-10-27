@@ -108,6 +108,7 @@ def main():
 
         out_samples[output['sample_id']] = output.copy()
     
+    os.makedirs(os.path.dirname(args.out_file), exist_ok=True)
     with open(args.out_file, 'w', encoding='utf-8') as f:
         json.dump(list(out_samples.values()), f, indent=2)
 

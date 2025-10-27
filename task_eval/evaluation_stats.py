@@ -145,6 +145,8 @@ def analyze_aggr_acc(ann_file, in_file, out_file, model_name, metric_key, encode
         results_dict[model_name]['context_length_counts'] = context_len_og
         results_dict[model_name]['cum_accuracy_by_context_length'] = context_len_counts
 
+    # 确保输出目录存在
+    os.makedirs(os.path.dirname(out_file), exist_ok=True)
     with open(out_file, 'w', encoding='utf-8') as f:
         json.dump(results_dict, f, indent=2)
 
