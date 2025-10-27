@@ -16,7 +16,7 @@ EMB_DIR=./outputs/rag_hf_llm/embeddings
 # Model selection: mistral-instruct-7b-32k-v2, gemma-7b-it, llama2-chat, llama3-chat-70b, etc.
 MODEL="mistral-instruct-7b-32k-v2"
 
-# dialog as database - TEST with only TOP_K=5
+# dialog as database
 for TOP_K in 5 10 25 50; do
     python3 task_eval/evaluate_qa.py \
         --data-file $DATA_FILE_PATH --out-file $OUT_DIR/$QA_OUTPUT_FILE \

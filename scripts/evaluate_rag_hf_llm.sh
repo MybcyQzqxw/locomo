@@ -24,18 +24,18 @@ for TOP_K in 5 10 25 50; do
         --emb-dir $EMB_DIR --rag-mode dialog --use-4bit
 done
 
-# observation as database
-for TOP_K in 5 10 25 50; do
-    python3 task_eval/evaluate_qa.py \
-        --data-file $DATA_FILE_PATH --out-file $OUT_DIR/$QA_OUTPUT_FILE \
-        --model $MODEL --batch-size 1 --use-rag --retriever dragon --top-k $TOP_K \
-        --emb-dir $EMB_DIR --rag-mode observation --use-4bit
-done
+# # observation as database
+# for TOP_K in 5 10 25 50; do
+#     python3 task_eval/evaluate_qa.py \
+#         --data-file $DATA_FILE_PATH --out-file $OUT_DIR/$QA_OUTPUT_FILE \
+#         --model $MODEL --batch-size 1 --use-rag --retriever dragon --top-k $TOP_K \
+#         --emb-dir $EMB_DIR --rag-mode observation --use-4bit
+# done
 
-# summary as database
-for TOP_K in 2 5 10; do
-    python3 task_eval/evaluate_qa.py \
-        --data-file $DATA_FILE_PATH --out-file $OUT_DIR/$QA_OUTPUT_FILE \
-        --model $MODEL --batch-size 1 --use-rag --retriever dragon --top-k $TOP_K \
-        --emb-dir $EMB_DIR --rag-mode summary --use-4bit
-done
+# # summary as database
+# for TOP_K in 2 5 10; do
+#     python3 task_eval/evaluate_qa.py \
+#         --data-file $DATA_FILE_PATH --out-file $OUT_DIR/$QA_OUTPUT_FILE \
+#         --model $MODEL --batch-size 1 --use-rag --retriever dragon --top-k $TOP_K \
+#         --emb-dir $EMB_DIR --rag-mode summary --use-4bit
+# done
