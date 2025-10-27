@@ -1,33 +1,33 @@
 #!/bin/bash
-# Environment setup script for LoCoMo project
+# Test environment configuration for LoCoMo project
+# Uses locomo1 dataset (single conversation for testing)
 
-# Conda 环境名称
-# 如果你的环境名不是 locomo，请修改这里
-CONDA_ENV_NAME=locomo
+# Source common initialization
+source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-# 激活 conda 环境
-# 注意：首次使用需要先运行 conda init bash
-if [ -n "$CONDA_ENV_NAME" ]; then
-    echo "正在激活 conda 环境: $CONDA_ENV_NAME"
-    # 初始化 conda（如果尚未初始化）
-    eval "$(conda shell.bash hook)"
-    conda activate $CONDA_ENV_NAME
-    
-    if [ $? -eq 0 ]; then
-        echo "成功激活环境: $CONDA_ENV_NAME"
-        echo "Python 路径: $(which python)"
-        echo "Python 版本: $(python --version)"
-    else
-        echo "警告: 无法激活 conda 环境 $CONDA_ENV_NAME"
-        echo "将使用系统默认 Python"
-    fi
-fi
-
-# save generated outputs to this location
+# ============================================
+# Dataset and Output Configuration
+# ============================================
+# Save generated outputs to this location
 OUT_DIR=./outputs
 
-# save embeddings to this location
+# Save embeddings to this location
 EMB_DIR=./outputs
+
+# Path to LoCoMo data file (locomo1 for testing)
+DATA_FILE_PATH=./data/locomo1.json
+
+# Filenames for different outputs
+QA_OUTPUT_FILE=locomo1_qa.json
+OBS_OUTPUT_FILE=locomo1_observation.json
+SESS_SUMM_OUTPUT_FILE=locomo1_session_summary.json
+
+# Path to folder containing prompts and in-context examples
+PROMPT_DIR=./prompt_examples
+
+# ============================================
+# API Keys Configuration
+# ============================================
 
 # path to LoCoMo data file
 DATA_FILE_PATH=./data/locomo1.json

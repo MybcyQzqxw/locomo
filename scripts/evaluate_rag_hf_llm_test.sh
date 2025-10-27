@@ -1,5 +1,5 @@
 #!/bin/bash
-# RAG-based HuggingFace local model evaluation script for Ubuntu/Linux
+# RAG-based HuggingFace local model evaluation script for Ubuntu/Linux (TEST VERSION)
 
 # sets necessary environment variables and activates conda environment
 source scripts/env1_5qa.sh
@@ -10,7 +10,7 @@ source scripts/env1_5qa.sh
 # Model selection: mistral-instruct-7b-32k-v2, gemma-7b-it, llama2-chat, llama3-chat-70b, etc.
 MODEL="mistral-instruct-7b-32k-v2"
 
-# dialog as database
+# dialog as database - TEST with only TOP_K=5
 for TOP_K in 5; do
     python3 task_eval/evaluate_qa.py \
         --data-file $DATA_FILE_PATH --out-file $OUT_DIR/$QA_OUTPUT_FILE \
