@@ -28,18 +28,6 @@ PROMPT_DIR=./prompt_examples
 # ============================================
 # API Keys Configuration
 # ============================================
-
-# path to LoCoMo data file
-DATA_FILE_PATH=./data/locomo.json
-
-# filenames for different outputs
-QA_OUTPUT_FILE=locomo_qa.json
-OBS_OUTPUT_FILE=locomo_observation.json
-SESS_SUMM_OUTPUT_FILE=locomo_session_summary.json
-
-# path to folder containing prompts and in-context examples
-PROMPT_DIR=./prompt_examples
-
 # OpenAI API Key
 export OPENAI_API_KEY=
 
