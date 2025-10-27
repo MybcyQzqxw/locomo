@@ -59,7 +59,8 @@ def init_context_model(retriever):
         from transformers import AutoTokenizer, AutoModel
         # Dragon 的上下文侧应使用 context-encoder 对应的 tokenizer
         context_tokenizer = AutoTokenizer.from_pretrained('facebook/dragon-plus-context-encoder')
-        context_model = AutoModel.from_pretrained('facebook/dragon-plus-context-encoder').cuda()
+        # 使用 use_safetensors=True 强制加载 safetensors 格式，避免 torch.load 安全问题
+        context_model = AutoModel.from_pretrained('facebook/dragon-plus-context-encoder', use_safetensors=True).cuda()
         return context_tokenizer, context_model
 
     elif retriever == 'openai':
@@ -93,7 +94,8 @@ def init_query_model(retriever):
         from transformers import AutoTokenizer, AutoModel
         # Dragon 使用不同的 query/context 编码器，这里初始化查询侧的 tokenizer/model
         question_tokenizer = AutoTokenizer.from_pretrained('facebook/dragon-plus-query-encoder')
-        question_model = AutoModel.from_pretrained('facebook/dragon-plus-query-encoder').cuda()
+        # 使用 use_safetensors=True 强制加载 safetensors 格式
+        question_model = AutoModel.from_pretrained('facebook/dragon-plus-query-encoder', use_safetensors=True).cuda()
         return question_tokenizer, question_model
 
     elif retriever == 'openai':
@@ -243,6 +245,8 @@ def prepare_for_rag(args, data):
                 'context': dialogs,
             }
 
+            # 确保输出目录存在
+            os.makedirs(os.path.dirname(pkl_path), exist_ok=True)
             with open(pkl_path, 'wb') as f:
                 pickle.dump(database, f)
         else:
