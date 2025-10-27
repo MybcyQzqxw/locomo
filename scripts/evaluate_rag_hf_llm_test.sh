@@ -2,7 +2,7 @@
 # RAG-based HuggingFace local model evaluation script for Ubuntu/Linux
 
 # sets necessary environment variables and activates conda environment
-source scripts/env_1.sh
+source scripts/env1_5qa.sh
 
 # Evaluate local HuggingFace model under different RAG conditions
 # You can change the MODEL variable to test different models
