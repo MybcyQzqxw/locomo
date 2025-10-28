@@ -653,6 +653,11 @@ def init_hf_model(args):
     # 对于受限模型（如 LLaMA、Gemma），需要通过申请获取访问权限和 token
     hf_token = os.environ.get('HF_TOKEN', None)
     
+    # 检查是否需要强制验证的模型（gated models）
+    # 这些模型需要先在 HuggingFace 上申请访问权限，并提供 token
+    gated_models = ['llama', 'gemma', 'qwen']  # 需要认证的模型关键词
+    requires_token = any(keyword in model_name.lower() for keyword in gated_models)
+    
     # 输出 token 状态用于调试
     if hf_token:
         print(f"HF_TOKEN found: {hf_token[:10]}... (length: {len(hf_token)})")
@@ -660,7 +665,19 @@ def init_hf_model(args):
         # 这样可以避免与缓存的旧 token 冲突
         print("Will use HF_TOKEN for model loading")
     else:
-        print("No HF_TOKEN provided, proceeding without authentication")
+        if requires_token:
+            # 如果是需要认证的模型但没有提供 token，报错退出
+            raise ValueError(
+                f"❌ Error: Model '{model_name}' requires HuggingFace authentication!\n"
+                f"   This is a gated model that needs access permission.\n"
+                f"   Please:\n"
+                f"   1. Apply for access at: https://huggingface.co/{model_name}\n"
+                f"   2. Get your HF token from: https://huggingface.co/settings/tokens\n"
+                f"   3. Add it to .env.local file:\n"
+                f"      HF_TOKEN=hf_your_token_here\n"
+            )
+        else:
+            print("No HF_TOKEN provided, proceeding without authentication")
 
     # 根据量化选项加载模型
     if args.use_4bit:
