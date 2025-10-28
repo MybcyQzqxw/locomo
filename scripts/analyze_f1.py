@@ -37,7 +37,7 @@ def load_stats(stats_file):
 
 
 def calculate_f1_scores(stats_data, model_name):
-    """计算 F1 分数统计"""
+    """计算 F1 分数和 Recall 统计"""
     if model_name not in stats_data:
         return None
     
@@ -55,17 +55,33 @@ def calculate_f1_scores(stats_data, model_name):
     # 计算平均 F1
     results['avg_f1'] = results['total_f1'] / results['total_questions'] if results['total_questions'] > 0 else 0
     
+    # 检查是否有 Recall 数据（RAG 模式）
+    if 'recall_by_category' in model_data:
+        recall_by_cat = model_data['recall_by_category']
+        results['has_recall'] = True
+        results['total_recall'] = sum(recall_by_cat.values())
+        results['avg_recall'] = results['total_recall'] / len(recall_by_cat) if len(recall_by_cat) > 0 else 0
+    else:
+        results['has_recall'] = False
+        results['avg_recall'] = None
+    
     # 按类别计算
     for cat in sorted(category_counts.keys(), key=int):
         cat_count = category_counts[cat]
         cat_f1_sum = cum_accuracy[cat]
         cat_avg_f1 = cat_f1_sum / cat_count if cat_count > 0 else 0
         
-        results['categories'][int(cat)] = {
+        cat_data = {
             'count': cat_count,
             'total_f1': cat_f1_sum,
             'avg_f1': cat_avg_f1
         }
+        
+        # 添加 Recall 数据（如果有）
+        if results['has_recall'] and cat in recall_by_cat:
+            cat_data['avg_recall'] = recall_by_cat[cat]
+        
+        results['categories'][int(cat)] = cat_data
     
     return results
 
@@ -88,32 +104,50 @@ def print_model_results(results, title="Model Results", table_format="grid"):
     print(f"  Model: {results['model_name']}")
     print(f"  Total Questions: {results['total_questions']}")
     print(f"  Average F1 Score: {results['avg_f1']:.4f}")
+    
+    # 显示 Recall@K（如果是 RAG 模型）
+    if results.get('has_recall', False):
+        print(f"  Average Recall@K: {results['avg_recall']:.4f}")
+        print(f"  📊 Note: Recall@K measures whether evidence dialogues are in Top-K retrieved contexts")
+    
     print(f"\n  📋 Category Breakdown:")
     
     # 准备表格数据
     table_data = []
+    headers = ['Category', 'Questions', 'Avg F1']
+    if results.get('has_recall', False):
+        headers.append('Recall@K')
+    
     for cat_id in sorted(results['categories'].keys()):
         cat_data = results['categories'][cat_id]
         cat_name = get_category_name(cat_id)
-        table_data.append([
+        row = [
             cat_name,
             cat_data['count'],
             f"{cat_data['avg_f1']:.4f}"
-        ])
+        ]
+        if results.get('has_recall', False) and 'avg_recall' in cat_data:
+            row.append(f"{cat_data['avg_recall']:.4f}")
+        table_data.append(row)
     
     # 使用 tabulate 输出美观表格（如果可用）
     if TABULATE_AVAILABLE:
-        headers = ['Category', 'Questions', 'Avg F1']
         table = tabulate(table_data, headers=headers, tablefmt=table_format)
         # 缩进表格
         indented_table = '\n'.join(['  ' + line for line in table.split('\n')])
         print(indented_table)
     else:
         # 降级到简单格式
-        print(f"  {'Category':<12} {'Questions':<12} {'Avg F1':<12}")
-        print(f"  {'-'*40}")
+        header_line = f"  {headers[0]:<12} {headers[1]:<12} {headers[2]:<12}"
+        if len(headers) > 3:
+            header_line += f" {headers[3]:<12}"
+        print(header_line)
+        print(f"  {'-'*60}")
         for row in table_data:
-            print(f"  {row[0]:<12} {row[1]:<12} {row[2]:<12}")
+            line = f"  {row[0]:<12} {row[1]:<12} {row[2]:<12}"
+            if len(row) > 3:
+                line += f" {row[3]:<12}"
+            print(line)
 
 
 def get_category_name(cat_id):
@@ -150,27 +184,33 @@ def compare_models(results_list, table_format="grid"):
     table_data = []
     for idx, result in enumerate(sorted_results, 1):
         rank_emoji = "🥇" if idx == 1 else "🥈" if idx == 2 else "🥉" if idx == 3 else f"{idx}."
-        table_data.append([
+        row = [
             rank_emoji,
             result['model_name'],
             result['method'].upper(),
             f"{result['avg_f1']:.4f}",
             result['total_questions']
-        ])
+        ]
+        # 添加 Recall@K（如果有）
+        if result.get('has_recall', False):
+            row.append(f"{result['avg_recall']:.4f}")
+        else:
+            row.append("N/A")
+        table_data.append(row)
     
     # 使用 tabulate 输出美观表格（如果可用）
     if TABULATE_AVAILABLE:
-        headers = ['Rank', 'Model', 'Method', 'Avg F1', 'Questions']
+        headers = ['Rank', 'Model', 'Method', 'Avg F1', 'Questions', 'Recall@K']
         table = tabulate(table_data, headers=headers, tablefmt=table_format)
         # 缩进表格
         indented_table = '\n'.join(['  ' + line for line in table.split('\n')])
         print(indented_table)
     else:
         # 降级到简单格式
-        print(f"  {'Rank':<6} {'Model':<40} {'Method':<12} {'Avg F1':<15} {'Questions':<15}")
-        print(f"  {'-'*90}")
+        print(f"  {'Rank':<6} {'Model':<40} {'Method':<12} {'Avg F1':<15} {'Questions':<15} {'Recall@K':<12}")
+        print(f"  {'-'*110}")
         for row in table_data:
-            print(f"  {row[0]:<6} {row[1]:<40} {row[2]:<12} {row[3]:<15} {row[4]:<15}")
+            print(f"  {row[0]:<6} {row[1]:<40} {row[2]:<12} {row[3]:<15} {row[4]:<15} {row[5]:<12}")
 
 
 def export_to_csv(results_list, output_file):
@@ -180,31 +220,47 @@ def export_to_csv(results_list, output_file):
     with open(output_file, 'w', newline='', encoding='utf-8') as f:
         writer = csv.writer(f)
         
+        # 检查是否有 Recall 数据
+        has_recall = any(r.get('has_recall', False) for r in results_list)
+        
         # 写入表头
-        writer.writerow(['Model', 'Total Questions', 'Average F1', 'Category', 'Category Questions', 'Category F1'])
+        headers = ['Model', 'Total Questions', 'Average F1', 'Category', 'Category Questions', 'Category F1']
+        if has_recall:
+            headers.append('Category Recall@K')
+        writer.writerow(headers)
         
         # 写入数据
         for result in results_list:
             model_name = result['model_name']
             total_q = result['total_questions']
             avg_f1 = result['avg_f1']
+            avg_recall = result.get('avg_recall', None)
             
             # 写入总体数据
-            writer.writerow([model_name, total_q, f"{avg_f1:.4f}", 'Overall', total_q, f"{avg_f1:.4f}"])
+            overall_row = [model_name, total_q, f"{avg_f1:.4f}", 'Overall', total_q, f"{avg_f1:.4f}"]
+            if has_recall:
+                overall_row.append(f"{avg_recall:.4f}" if avg_recall is not None else "N/A")
+            writer.writerow(overall_row)
             
             # 写入分类数据
             for cat_id in sorted(result['categories'].keys()):
                 cat_data = result['categories'][cat_id]
-                writer.writerow([
+                row = [
                     model_name,
                     total_q,
                     f"{avg_f1:.4f}",
                     f"Category {cat_id}",
                     cat_data['count'],
                     f"{cat_data['avg_f1']:.4f}"
-                ])
+                ]
+                if has_recall:
+                    cat_recall = cat_data.get('avg_recall', None)
+                    row.append(f"{cat_recall:.4f}" if cat_recall is not None else "N/A")
+                writer.writerow(row)
     
     print(f"\n✅ Results exported to: {output_file}")
+    if has_recall:
+        print(f"   📊 Includes Recall@K data for RAG models")
 
 
 def scan_outputs_directory(base_dir="./outputs"):

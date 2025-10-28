@@ -1,0 +1,73 @@
+Model,Total Questions,Average F1,Category,Category Questions,Category F1
+mistral-instruct-7b-32k-v2_dialog_top_5,1986,0.2499,Overall,1986,0.2499
+mistral-instruct-7b-32k-v2_dialog_top_5,1986,0.2499,Category 1,282,0.1775
+mistral-instruct-7b-32k-v2_dialog_top_5,1986,0.2499,Category 2,321,0.1865
+mistral-instruct-7b-32k-v2_dialog_top_5,1986,0.2499,Category 3,96,0.0966
+mistral-instruct-7b-32k-v2_dialog_top_5,1986,0.2499,Category 4,841,0.2309
+mistral-instruct-7b-32k-v2_dialog_top_5,1986,0.2499,Category 5,446,0.4103
+mistral-instruct-7b-32k-v2_dialog_top_10,1986,0.2419,Overall,1986,0.2419
+mistral-instruct-7b-32k-v2_dialog_top_10,1986,0.2419,Category 1,282,0.2398
+mistral-instruct-7b-32k-v2_dialog_top_10,1986,0.2419,Category 2,321,0.1936
+mistral-instruct-7b-32k-v2_dialog_top_10,1986,0.2419,Category 3,96,0.0848
+mistral-instruct-7b-32k-v2_dialog_top_10,1986,0.2419,Category 4,841,0.2468
+mistral-instruct-7b-32k-v2_dialog_top_10,1986,0.2419,Category 5,446,0.3027
+mistral-instruct-7b-32k-v2_dialog_top_25,1986,0.2327,Overall,1986,0.2327
+mistral-instruct-7b-32k-v2_dialog_top_25,1986,0.2327,Category 1,282,0.2729
+mistral-instruct-7b-32k-v2_dialog_top_25,1986,0.2327,Category 2,321,0.2055
+mistral-instruct-7b-32k-v2_dialog_top_25,1986,0.2327,Category 3,96,0.1010
+mistral-instruct-7b-32k-v2_dialog_top_25,1986,0.2327,Category 4,841,0.2730
+mistral-instruct-7b-32k-v2_dialog_top_25,1986,0.2327,Category 5,446,0.1794
+mistral-instruct-7b-32k-v2_dialog_top_50,1986,0.2355,Overall,1986,0.2355
+mistral-instruct-7b-32k-v2_dialog_top_50,1986,0.2355,Category 1,282,0.2817
+mistral-instruct-7b-32k-v2_dialog_top_50,1986,0.2355,Category 2,321,0.2022
+mistral-instruct-7b-32k-v2_dialog_top_50,1986,0.2355,Category 3,96,0.0988
+mistral-instruct-7b-32k-v2_dialog_top_50,1986,0.2355,Category 4,841,0.2911
+mistral-instruct-7b-32k-v2_dialog_top_50,1986,0.2355,Category 5,446,0.1547
+mistral-instruct-7b-32k-v2_observation_top_5,1986,0.2702,Overall,1986,0.2702
+mistral-instruct-7b-32k-v2_observation_top_5,1986,0.2702,Category 1,282,0.1905
+mistral-instruct-7b-32k-v2_observation_top_5,1986,0.2702,Category 2,321,0.1682
+mistral-instruct-7b-32k-v2_observation_top_5,1986,0.2702,Category 3,96,0.0794
+mistral-instruct-7b-32k-v2_observation_top_5,1986,0.2702,Category 4,841,0.2179
+mistral-instruct-7b-32k-v2_observation_top_5,1986,0.2702,Category 5,446,0.5336
+mistral-instruct-7b-32k-v2_observation_top_10,1986,0.2652,Overall,1986,0.2652
+mistral-instruct-7b-32k-v2_observation_top_10,1986,0.2652,Category 1,282,0.2427
+mistral-instruct-7b-32k-v2_observation_top_10,1986,0.2652,Category 2,321,0.1832
+mistral-instruct-7b-32k-v2_observation_top_10,1986,0.2652,Category 3,96,0.0813
+mistral-instruct-7b-32k-v2_observation_top_10,1986,0.2652,Category 4,841,0.2280
+mistral-instruct-7b-32k-v2_observation_top_10,1986,0.2652,Category 5,446,0.4484
+mistral-instruct-7b-32k-v2_observation_top_25,1986,0.2550,Overall,1986,0.2550
+mistral-instruct-7b-32k-v2_observation_top_25,1986,0.2550,Category 1,282,0.2760
+mistral-instruct-7b-32k-v2_observation_top_25,1986,0.2550,Category 2,321,0.1868
+mistral-instruct-7b-32k-v2_observation_top_25,1986,0.2550,Category 3,96,0.0833
+mistral-instruct-7b-32k-v2_observation_top_25,1986,0.2550,Category 4,841,0.2470
+mistral-instruct-7b-32k-v2_observation_top_25,1986,0.2550,Category 5,446,0.3430
+mistral-instruct-7b-32k-v2_observation_top_50,1986,0.2477,Overall,1986,0.2477
+mistral-instruct-7b-32k-v2_observation_top_50,1986,0.2477,Category 1,282,0.2856
+mistral-instruct-7b-32k-v2_observation_top_50,1986,0.2477,Category 2,321,0.1875
+mistral-instruct-7b-32k-v2_observation_top_50,1986,0.2477,Category 3,96,0.0871
+mistral-instruct-7b-32k-v2_observation_top_50,1986,0.2477,Category 4,841,0.2579
+mistral-instruct-7b-32k-v2_observation_top_50,1986,0.2477,Category 5,446,0.2825
+mistral-instruct-7b-32k-v2_summary_top_2,1986,0.2132,Overall,1986,0.2132
+mistral-instruct-7b-32k-v2_summary_top_2,1986,0.2132,Category 1,282,0.1216
+mistral-instruct-7b-32k-v2_summary_top_2,1986,0.2132,Category 2,321,0.1183
+mistral-instruct-7b-32k-v2_summary_top_2,1986,0.2132,Category 3,96,0.0705
+mistral-instruct-7b-32k-v2_summary_top_2,1986,0.2132,Category 4,841,0.1573
+mistral-instruct-7b-32k-v2_summary_top_2,1986,0.2132,Category 5,446,0.4753
+mistral-instruct-7b-32k-v2_summary_top_5,1986,0.1945,Overall,1986,0.1945
+mistral-instruct-7b-32k-v2_summary_top_5,1986,0.1945,Category 1,282,0.1492
+mistral-instruct-7b-32k-v2_summary_top_5,1986,0.1945,Category 2,321,0.1363
+mistral-instruct-7b-32k-v2_summary_top_5,1986,0.1945,Category 3,96,0.0764
+mistral-instruct-7b-32k-v2_summary_top_5,1986,0.1945,Category 4,841,0.1715
+mistral-instruct-7b-32k-v2_summary_top_5,1986,0.1945,Category 5,446,0.3341
+mistral-instruct-7b-32k-v2_summary_top_10,1986,0.1959,Overall,1986,0.1959
+mistral-instruct-7b-32k-v2_summary_top_10,1986,0.1959,Category 1,282,0.1859
+mistral-instruct-7b-32k-v2_summary_top_10,1986,0.1959,Category 2,321,0.1381
+mistral-instruct-7b-32k-v2_summary_top_10,1986,0.1959,Category 3,96,0.0693
+mistral-instruct-7b-32k-v2_summary_top_10,1986,0.1959,Category 4,841,0.1875
+mistral-instruct-7b-32k-v2_summary_top_10,1986,0.1959,Category 5,446,0.2870
+mistral-instruct-7b-32k-v2,1986,0.1944,Overall,1986,0.1944
+mistral-instruct-7b-32k-v2,1986,0.1944,Category 1,282,0.1453
+mistral-instruct-7b-32k-v2,1986,0.1944,Category 2,321,0.0987
+mistral-instruct-7b-32k-v2,1986,0.1944,Category 3,96,0.0828
+mistral-instruct-7b-32k-v2,1986,0.1944,Category 4,841,0.1658
+mistral-instruct-7b-32k-v2,1986,0.1944,Category 5,446,0.3722
