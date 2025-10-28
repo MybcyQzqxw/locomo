@@ -94,16 +94,17 @@ def main():
             date_times.append(date_time)
             context_ids.append('S%s'%i)
 
-            print("Getting embeddings for %s summaries" % len(summaries))
-            embeddings = get_embeddings(args.retriever, summaries, 'context')
-            assert embeddings.shape[0] == len(summaries)
-            database = {'embeddings': embeddings,
-                                'date_time': date_times,
-                                'dia_id': context_ids,
-                                'context': summaries}
+        # 优化：在循环外一次性生成所有摘要的嵌入
+        print("Getting embeddings for %s summaries" % len(summaries))
+        embeddings = get_embeddings(args.retriever, summaries, 'context')
+        assert embeddings.shape[0] == len(summaries)
+        database = {'embeddings': embeddings,
+                    'date_time': date_times,
+                    'dia_id': context_ids,
+                    'context': summaries}
 
-
-        with open(args.out_file.replace('.json', '_%s.pkl' % data['sample_id']), 'wb') as f:
+        pkl_file = args.out_file.replace('.json', '_%s.pkl' % data['sample_id'])
+        with open(pkl_file, 'wb') as f:
             pickle.dump(database, f)
 
         out_samples[output['sample_id']] = output.copy()
