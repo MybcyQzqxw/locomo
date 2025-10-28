@@ -24,19 +24,3 @@ SESS_SUMM_OUTPUT_FILE=locomo1_5qa_session_summary.json
 
 # Path to folder containing prompts and in-context examples
 PROMPT_DIR=./prompt_examples
-
-# ============================================
-# API Keys Configuration
-# ============================================
-# OpenAI API Key
-export OPENAI_API_KEY=
-
-# Google API Key
-export GOOGLE_API_KEY=
-
-# Anthropic API Key
-export ANTHROPIC_API_KEY=
-
-# HuggingFace Token (Set this in your environment or create a local .env file)
-# Do NOT commit your actual token to git!
-export HF_TOKEN=

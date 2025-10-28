@@ -27,18 +27,6 @@ cd "$PROJECT_ROOT"
 echo "Working directory: $(pwd)"
 
 # ============================================
-# Load Local Environment Variables
-# ============================================
-# Load .env.local if it exists (contains sensitive tokens)
-if [ -f "$PROJECT_ROOT/.env.local" ]; then
-    echo "Loading local environment variables from .env.local"
-    # Use set -a to automatically export all variables
-    set -a
-    source "$PROJECT_ROOT/.env.local"
-    set +a
-fi
-
-# ============================================
 # HuggingFace Configuration
 # ============================================
 # Use HuggingFace mirror for faster downloads in China
@@ -69,4 +57,27 @@ if [ -n "$CONDA_ENV_NAME" ]; then
         echo "Warning: Unable to activate conda environment $CONDA_ENV_NAME"
         echo "Using system default Python"
     fi
+fi
+
+# ============================================
+# Load Local Environment Variables (LAST!)
+# ============================================
+# Load .env.local at the END to ensure variables are not overwritten
+if [ -f "$PROJECT_ROOT/.env.local" ]; then
+    echo "Loading local environment variables from .env.local"
+    set -a
+    source "$PROJECT_ROOT/.env.local"
+    set +a
+    # Verify HF_TOKEN is loaded
+    if [ -n "$HF_TOKEN" ]; then
+        echo "✓ HF_TOKEN loaded successfully"
+    else
+        echo "⚠ Warning: .env.local exists but HF_TOKEN is empty"
+        echo "  Some features may require HF_TOKEN to work properly"
+    fi
+else
+    echo "⚠ Warning: .env.local not found at $PROJECT_ROOT/.env.local"
+    echo "  Create this file with your tokens if you need HuggingFace authentication"
+    echo "  Example content:"
+    echo "    HF_TOKEN=hf_your_token_here"
 fi
