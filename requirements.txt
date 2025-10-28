@@ -64,6 +64,7 @@ matplotlib
 seaborn
 plotly
 wordcloud
+tabulate  # 用于美观的表格输出（analyze_f1.py）
 
 # Utilities
 tqdm
