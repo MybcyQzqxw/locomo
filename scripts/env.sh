@@ -15,12 +15,12 @@ OUT_DIR=./outputs
 EMB_DIR=./outputs
 
 # Path to LoCoMo data file
-DATA_FILE_PATH=./data/locomo.json
+DATA_FILE_PATH=./data/locomo10.json
 
 # Filenames for different outputs
-QA_OUTPUT_FILE=locomo_qa.json
-OBS_OUTPUT_FILE=locomo_observation.json
-SESS_SUMM_OUTPUT_FILE=locomo_session_summary.json
+QA_OUTPUT_FILE=locomo10_qa.json
+OBS_OUTPUT_FILE=locomo10_observation.json
+SESS_SUMM_OUTPUT_FILE=locomo10_session_summary.json
 
 # Path to folder containing prompts and in-context examples
 PROMPT_DIR=./prompt_examples
