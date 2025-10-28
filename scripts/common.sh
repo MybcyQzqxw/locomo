@@ -32,7 +32,10 @@ echo "Working directory: $(pwd)"
 # Load .env.local if it exists (contains sensitive tokens)
 if [ -f "$PROJECT_ROOT/.env.local" ]; then
     echo "Loading local environment variables from .env.local"
-    export $(cat "$PROJECT_ROOT/.env.local" | grep -v '^#' | xargs)
+    # Use set -a to automatically export all variables
+    set -a
+    source "$PROJECT_ROOT/.env.local"
+    set +a
 fi
 
 # ============================================

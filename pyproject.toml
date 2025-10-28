@@ -1,0 +1,101 @@
+# pyproject.toml - Python project configuration
+# This file configures various Python tools and linters
+
+[tool.black]
+# Black code formatter configuration
+line-length = 120
+target-version = ['py310']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.git
+  | __pycache__
+  | \.venv
+  | venv
+  | env
+  | build
+  | dist
+  | outputs
+  | data
+)/
+'''
+
+[tool.isort]
+# Import sorting configuration
+profile = "black"
+line_length = 120
+skip_gitignore = true
+skip = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    "env",
+    "build",
+    "dist",
+    "outputs",
+    "data"
+]
+
+[tool.pylint.messages_control]
+# Pylint configuration
+disable = [
+    "C0111",  # missing-docstring
+    "C0103",  # invalid-name
+    "C0301",  # line-too-long
+    "R0913",  # too-many-arguments
+    "R0914",  # too-many-locals
+    "R0915",  # too-many-statements
+    "R0912",  # too-many-branches
+    "W0612",  # unused-variable
+    "W0613",  # unused-argument
+    "W0621",  # redefined-outer-name
+    "E1101",  # no-member (often false positive with PyTorch)
+    "E0401",  # import-error
+]
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.mypy]
+# MyPy type checking configuration
+python_version = "3.10"
+warn_return_any = false
+warn_unused_configs = true
+ignore_missing_imports = true
+exclude = [
+    "build",
+    "dist",
+    "outputs",
+    "data",
+]
+
+[tool.pyright]
+# Pyright type checking configuration (VS Code Pylance uses this)
+include = ["task_eval", "generative_agents"]
+exclude = [
+    "**/__pycache__",
+    "**/.venv",
+    "**/venv",
+    "**/env",
+    "build",
+    "dist",
+    "outputs",
+    "data",
+]
+ignore = []
+defineConstant = {}
+stubPath = ""
+reportMissingImports = false
+reportMissingTypeStubs = false
+reportUnusedImport = false
+reportUnusedVariable = false
+reportUnusedClass = false
+reportUnusedFunction = false
+reportPrivateUsage = false
+reportConstantRedefinition = false
+reportIncompatibleMethodOverride = false
+reportGeneralTypeIssues = false
+pythonVersion = "3.10"
+pythonPlatform = "Linux"
