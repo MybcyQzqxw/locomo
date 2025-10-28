@@ -4,7 +4,7 @@
 # sets necessary environment variables and activates conda environment
 # Use BASH_SOURCE to get the directory of this script, then source the env file
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$SCRIPT_DIR/env.sh"
+source "$SCRIPT_DIR/env10.sh"
 
 # Override output directories for RAG-based HF LLM results
 OUT_DIR=./outputs/rag_hf_llm

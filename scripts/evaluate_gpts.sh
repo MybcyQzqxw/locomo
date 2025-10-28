@@ -3,7 +3,7 @@
 
 # sets necessary environment variables and activates conda environment
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$SCRIPT_DIR/env.sh"
+source "$SCRIPT_DIR/env10.sh"
 
 # Evaluate gpt-4-turbo
 python3 task_eval/evaluate_qa.py \

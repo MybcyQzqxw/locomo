@@ -3,7 +3,7 @@
 
 # sets necessary environment variables and activates conda environment
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$SCRIPT_DIR/env.sh"
+source "$SCRIPT_DIR/env10.sh"
 
 # gets observations using gpt-3.5-turbo and extract DRAGON embeddings for RAG database
 python task_eval/get_observation.py --data-file $DATA_FILE_PATH --out-file $OUT_DIR/$OBS_OUTPUT_FILE \

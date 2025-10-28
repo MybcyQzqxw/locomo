@@ -103,7 +103,16 @@ def main():
                     'dia_id': context_ids,
                     'context': summaries}
 
-        pkl_file = args.out_file.replace('.json', '_%s.pkl' % data['sample_id'])
+        # 保存 PKL 到 emb_dir（如果指定），否则保存到 out_file 同目录
+        if args.emb_dir:
+            dataset_prefix = os.path.splitext(os.path.basename(args.data_file))[0]
+            pkl_filename = f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl"
+            pkl_file = os.path.join(args.emb_dir, pkl_filename)
+            os.makedirs(args.emb_dir, exist_ok=True)
+        else:
+            pkl_file = args.out_file.replace('.json', '_%s.pkl' % data['sample_id'])
+            os.makedirs(os.path.dirname(pkl_file), exist_ok=True)
+        
         with open(pkl_file, 'wb') as f:
             pickle.dump(database, f)
 

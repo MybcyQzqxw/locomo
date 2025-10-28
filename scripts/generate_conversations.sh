@@ -3,7 +3,7 @@
 
 # sets necessary environment variables and activates conda environment
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$SCRIPT_DIR/env.sh"
+source "$SCRIPT_DIR/env10.sh"
 
 python3 generative_agents/generate_conversations.py \
     --out-dir ./data/multimodal_dialog/example/ \

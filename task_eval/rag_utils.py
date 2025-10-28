@@ -247,15 +247,116 @@ def prepare_for_rag(args, data):
             database = pickle.load(open(pkl_path, 'rb'))
 
     elif args.rag_mode == "summary":
-        assert os.path.exists(os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl")), (
-            f"Summaries and embeddings do not exist for {data['sample_id']}"
-        )
-        database = pickle.load(open(os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl"), 'rb'))
+        pkl_path = os.path.join(args.emb_dir, f"{dataset_prefix}_session_summary_{data['sample_id']}.pkl")
+        if not os.path.exists(pkl_path):
+            # 从 data['session_summary'] 中提取摘要并生成嵌入
+            summaries = []
+            date_times = []
+            context_ids = []
+            
+            session_nums = [int(k.split('_')[-1]) for k in data['conversation'].keys() if 'session' in k and 'date_time' not in k]
+            for i in range(min(session_nums), max(session_nums) + 1):
+                # 从 session_summary 字典中提取已有的摘要
+                summary_key = f'session_{i}_summary'
+                if 'session_summary' in data and summary_key in data['session_summary']:
+                    summary = data['session_summary'][summary_key]
+                else:
+                    raise ValueError(f"Missing {summary_key} in data['session_summary'] for {data['sample_id']}")
+                
+                # 提取日期时间
+                date_time = data['conversation'][f'session_{i}_date_time']
+                
+                # 添加到数组
+                summaries.append(summary)
+                date_times.append(date_time)
+                context_ids.append(f'S{i}')
+            
+            # 检查数组长度是否一致
+            if not (len(summaries) == len(date_times) == len(context_ids)):
+                raise ValueError(
+                    f"Data length mismatch for {data['sample_id']}: "
+                    f"summaries={len(summaries)}, date_times={len(date_times)}, "
+                    f"context_ids={len(context_ids)}. Some session data may be missing."
+                )
+            
+            print(f"Getting embeddings for {len(summaries)} summaries")
+            embeddings = get_embeddings(args.retriever, summaries, 'context')
+            assert embeddings.shape[0] == len(summaries), "Lengths of embeddings and summaries do not match"
+            
+            database = {
+                'embeddings': embeddings,
+                'date_time': date_times,
+                'dia_id': context_ids,
+                'context': summaries,
+            }
+            
+            # 确保输出目录存在
+            os.makedirs(os.path.dirname(pkl_path), exist_ok=True)
+            with open(pkl_path, 'wb') as f:
+                pickle.dump(database, f)
+        else:
+            database = pickle.load(open(pkl_path, 'rb'))
 
     elif args.rag_mode == 'observation':
         pkl_path = os.path.join(args.emb_dir, f"{dataset_prefix}_observation_{data['sample_id']}.pkl")
-        assert os.path.exists(pkl_path), f"Observations and embeddings do not exist for {data['sample_id']}"
-        database = pickle.load(open(pkl_path, 'rb'))
+        if not os.path.exists(pkl_path):
+            # 从 data['observation'] 中提取观察并生成嵌入
+            observations = []
+            date_times = []
+            context_ids = []
+            
+            # 遍历所有 session 的 observation
+            for session_key in sorted(data['observation'].keys()):
+                # 从 session_key 提取对应的时间
+                # 例如: 'session_1_observation' -> 'session_1_date_time'
+                session_time_key = session_key.replace(
+                    '_observation', '_date_time'
+                )
+                date_time = data['conversation'].get(
+                    session_time_key, "Unknown"
+                )
+                
+                # 遍历该 session 中每个人物的观察
+                session_data = data['observation'][session_key]
+                for person_name, obs_list in session_data.items():
+                    # obs_list 是 [[observation_text, dialog_id], ...]
+                    for obs_text, dia_id in obs_list:
+                        observations.append(obs_text)
+                        context_ids.append(dia_id)
+                        date_times.append(date_time)
+            
+            # 检查数组长度是否一致
+            if not (len(observations) == len(date_times) ==
+                    len(context_ids)):
+                raise ValueError(
+                    f"Data length mismatch for {data['sample_id']}: "
+                    f"observations={len(observations)}, "
+                    f"date_times={len(date_times)}, "
+                    f"context_ids={len(context_ids)}. "
+                    f"Some observation data may be missing."
+                )
+            
+            print(f"Getting embeddings for {len(observations)} "
+                  f"observations")
+            embeddings = get_embeddings(
+                args.retriever, observations, 'context'
+            )
+            assert embeddings.shape[0] == len(observations), \
+                "Lengths of embeddings and observations do not match"
+            
+            database = {
+                'embeddings': embeddings,
+                'date_time': date_times,
+                'dia_id': context_ids,
+                'context': observations,
+            }
+            
+            # 确保输出目录存在
+            os.makedirs(os.path.dirname(pkl_path), exist_ok=True)
+            with open(pkl_path, 'wb') as f:
+                pickle.dump(database, f)
+        else:
+            database = pickle.load(open(pkl_path, 'rb'))
 
     else:
         raise ValueError

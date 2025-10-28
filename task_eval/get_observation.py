@@ -91,9 +91,9 @@ def main():
 
         # save everything to a pickle file; separate pickle file for each sample
         database = {'embeddings': embeddings,
-                            'date_time': date_times,
-                            'dia_id': context_ids,
-                            'context': observations}
+                    'date_time': date_times,
+                    'dia_id': context_ids,
+                    'context': observations}
 
         with open(args.out_file.replace('.json', '_%s.pkl' % data['sample_id']), 'wb') as f:
             pickle.dump(database, f)

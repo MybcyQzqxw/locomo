@@ -3,7 +3,7 @@
 
 # sets necessary environment variables and activates conda environment
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-source "$SCRIPT_DIR/env.sh"
+source "$SCRIPT_DIR/env10.sh"
 
 # Evaluate gpt-3.5-turbo under different RAG conditions
 
