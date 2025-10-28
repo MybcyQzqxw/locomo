@@ -243,6 +243,20 @@ def prepare_for_rag(args, data):
             os.makedirs(os.path.dirname(pkl_path), exist_ok=True)
             with open(pkl_path, 'wb') as f:
                 pickle.dump(database, f)
+            
+            # 输出 JSON 文件（不包含 embeddings，仅包含文本信息）
+            json_path = pkl_path.replace('.pkl', '.json')
+            json_data = {
+                'sample_id': data['sample_id'],
+                'mode': 'dialog',
+                'total_count': len(dialogs),
+                'date_time': date_times,
+                'dia_id': context_ids,
+                'context': dialogs,
+            }
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(json_data, f, ensure_ascii=False, indent=2)
+            print(f"Saved dialog database to {json_path}")
         else:
             database = pickle.load(open(pkl_path, 'rb'))
 
@@ -294,6 +308,20 @@ def prepare_for_rag(args, data):
             os.makedirs(os.path.dirname(pkl_path), exist_ok=True)
             with open(pkl_path, 'wb') as f:
                 pickle.dump(database, f)
+            
+            # 输出 JSON 文件（不包含 embeddings，仅包含文本信息）
+            json_path = pkl_path.replace('.pkl', '.json')
+            json_data = {
+                'sample_id': data['sample_id'],
+                'mode': 'summary',
+                'total_count': len(summaries),
+                'date_time': date_times,
+                'dia_id': context_ids,
+                'context': summaries,
+            }
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(json_data, f, ensure_ascii=False, indent=2)
+            print(f"Saved summary database to {json_path}")
         else:
             database = pickle.load(open(pkl_path, 'rb'))
 
@@ -355,6 +383,20 @@ def prepare_for_rag(args, data):
             os.makedirs(os.path.dirname(pkl_path), exist_ok=True)
             with open(pkl_path, 'wb') as f:
                 pickle.dump(database, f)
+            
+            # 输出 JSON 文件（不包含 embeddings，仅包含文本信息）
+            json_path = pkl_path.replace('.pkl', '.json')
+            json_data = {
+                'sample_id': data['sample_id'],
+                'mode': 'observation',
+                'total_count': len(observations),
+                'date_time': date_times,
+                'dia_id': context_ids,
+                'context': observations,
+            }
+            with open(json_path, 'w', encoding='utf-8') as f:
+                json.dump(json_data, f, ensure_ascii=False, indent=2)
+            print(f"Saved observation database to {json_path}")
         else:
             database = pickle.load(open(pkl_path, 'rb'))
 
